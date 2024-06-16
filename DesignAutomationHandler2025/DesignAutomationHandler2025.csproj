@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<RootNamespace>DesignAutomationHandler</RootNamespace>
+		<AssemblyName>DesignAutomationHandler</AssemblyName>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Configurations>Debug;Release</Configurations>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+
+	<!-- .NET CORE Configurations (Revit 2025+) -->
+	<PropertyGroup Condition="!$(TargetFramework.StartsWith('net4'))">
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+		<GenerateDependencyFile>false</GenerateDependencyFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Autodesk.Forge.DesignAutomation.Revit" Version="2025.0.1" />
+		<PackageReference Include="Revit_All_Main_Versions_API_x64" Version="2025.0.0" IncludeAssets="build; compile" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\DesignAutomationHandler.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="DesignAutomationHandler.addin">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<SubType>Designer</SubType>
+		</Content>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<PostBuildEvent>
+			if exist "$(AppData)\Autodesk\REVIT\Addins\2025" copy "$(MSBuildProjectDirectory)\*.addin" "$(AppData)\Autodesk\REVIT\Addins\2025"
+			if exist "$(AppData)\Autodesk\REVIT\Addins\2025" copy "$(MSBuildProjectDirectory)\$(OutputPath)*.dll" "$(AppData)\Autodesk\REVIT\Addins\2025"
+		</PostBuildEvent>
+	</PropertyGroup>
+</Project>
